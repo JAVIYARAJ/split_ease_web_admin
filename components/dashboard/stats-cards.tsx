@@ -1,10 +1,10 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { 
-  Users, 
-  Receipt, 
-  DollarSign, 
+import {
+  Users,
+  Receipt,
+  DollarSign,
   TrendingUp,
   TrendingDown,
   ArrowUpRight,
@@ -49,42 +49,37 @@ const stats = [
 
 export function StatsCards() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {stats.map((stat) => (
-        <Card key={stat.title} className="bg-card/50 border-border/50 group hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1">
+        <Card key={stat.title} className="bg-card border-border">
           <CardContent className="p-6">
-            <div className="flex flex-col gap-6">
-              <div className="flex items-center justify-between">
-                <div className={cn(
-                  "flex h-12 w-12 items-center justify-center rounded-2xl transition-colors duration-300",
-                  stat.trend === "up" ? "bg-primary/10 group-hover:bg-primary/20" : "bg-destructive/10 group-hover:bg-destructive/15"
-                )}>
-                  <stat.icon className={cn(
-                    "h-6 w-6",
+            <div className="flex items-start justify-between">
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+                <p className="text-3xl font-bold tracking-tight text-card-foreground">{stat.value}</p>
+                <div className="flex items-center gap-1.5">
+                  <span className={cn(
+                    "flex items-center gap-0.5 text-sm font-medium",
                     stat.trend === "up" ? "text-primary" : "text-destructive"
-                  )} />
-                </div>
-                <div className={cn(
-                  "flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold tracking-tight shadow-sm",
-                  stat.trend === "up" ? "bg-primary/20 text-primary" : "bg-destructive/10 text-destructive"
-                )}>
-                  {stat.trend === "up" ? (
-                    <ArrowUpRight className="h-3.5 w-3.5" />
-                  ) : (
-                    <ArrowDownRight className="h-3.5 w-3.5" />
-                  )}
-                  {stat.change}
+                  )}>
+                    {stat.trend === "up" ? (
+                      <ArrowUpRight className="h-4 w-4" />
+                    ) : (
+                      <ArrowDownRight className="h-4 w-4" />
+                    )}
+                    {stat.change}
+                  </span>
+                  <span className="text-sm text-muted-foreground">{stat.description}</span>
                 </div>
               </div>
-              
-              <div className="flex flex-col gap-2.5">
-                <p className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest">{stat.title}</p>
-                <div className="flex items-baseline gap-2">
-                  <h3 className="text-4xl font-black tracking-tighter text-foreground leading-none">{stat.value}</h3>
-                </div>
-                <div className="pt-1">
-                  <span className="text-xs font-medium text-muted-foreground/50 italic">{stat.description}</span>
-                </div>
+              <div className={cn(
+                "flex h-12 w-12 items-center justify-center rounded-xl",
+                stat.trend === "up" ? "bg-primary/10" : "bg-destructive/10"
+              )}>
+                <stat.icon className={cn(
+                  "h-6 w-6",
+                  stat.trend === "up" ? "text-primary" : "text-destructive"
+                )} />
               </div>
             </div>
           </CardContent>

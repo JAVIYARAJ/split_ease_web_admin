@@ -113,9 +113,6 @@ export function DashboardHeader({ title = "Dashboard Overview", description = "W
           <h1 className="text-xl md:text-3xl font-bold tracking-tight text-foreground truncate whitespace-nowrap">
             {title}
           </h1>
-          <p className="text-xs md:text-sm font-medium text-muted-foreground/80 truncate">
-            {description}
-          </p>
         </div>
       </div>
       
@@ -131,12 +128,6 @@ export function DashboardHeader({ title = "Dashboard Overview", description = "W
         <Button variant="outline" className="hidden lg:flex gap-2 border-border bg-secondary text-foreground">
           <Download className="h-4 w-4" />
           Export
-        </Button>
-
-        {/* Add New */}
-        <Button className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
-          <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">Add New</span>
         </Button>
 
         {/* Notifications */}
@@ -167,8 +158,10 @@ export function DashboardHeader({ title = "Dashboard Overview", description = "W
               </DropdownMenuItem>
             </div>
             <DropdownMenuSeparator className="bg-border" />
-            <DropdownMenuItem className="justify-center text-primary focus:bg-secondary">
-              View all notifications
+            <DropdownMenuItem asChild className="justify-center text-primary focus:bg-secondary cursor-pointer">
+              <Link href="/notifications" className="w-full text-center">
+                View all notifications
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

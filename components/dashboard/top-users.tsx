@@ -57,43 +57,41 @@ const users = [
 export function TopUsers() {
   return (
     <Card className="bg-card border-border">
-      <CardHeader className="flex flex-row items-center justify-between pb-4 px-6">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div>
-          <CardTitle className="text-xl font-bold text-foreground">Top Power Users</CardTitle>
-          <CardDescription className="text-muted-foreground font-medium">
-            Influential users by transaction volume
+          <CardTitle className="text-lg font-semibold text-card-foreground">Top Users</CardTitle>
+          <CardDescription className="text-muted-foreground">
+            Most active users by expenses
           </CardDescription>
         </div>
-        <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5 hover:text-primary rounded-xl">
-          Detailed Report <ChevronRight className="ml-1 h-4 w-4" />
+        <Button variant="ghost" size="sm" className="text-primary">
+          View All <ChevronRight className="ml-1 h-4 w-4" />
         </Button>
       </CardHeader>
-      <CardContent className="px-6 pb-6">
-        <div className="space-y-3">
+      <CardContent>
+        <div className="space-y-4">
           {users.map((user, index) => (
-            <div key={user.id} className="group flex items-center gap-4 p-3 rounded-2xl border border-transparent hover:border-border/50 hover:bg-secondary/30 transition-all duration-300">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/50 text-[11px] font-black text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                #0{index + 1}
-              </div>
-              <Avatar className="h-11 w-11 shadow-sm border-2 border-background">
+            <div key={user.id} className="flex items-center gap-4">
+              <span className="w-6 text-center text-sm font-medium text-muted-foreground">
+                {index + 1}
+              </span>
+              <Avatar className="h-10 w-10">
                 <AvatarImage src="" />
-                <AvatarFallback className="bg-primary/5 text-primary text-sm font-bold">
+                <AvatarFallback className="bg-primary/10 text-primary text-sm">
                   {user.initials}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="truncate text-[15px] font-bold text-foreground">{user.name}</p>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-muted-foreground/60">{user.groups} established groups</span>
-                </div>
+                <p className="truncate text-sm font-medium text-card-foreground">{user.name}</p>
+                <p className="text-xs text-muted-foreground">{user.groups} groups</p>
               </div>
               <div className="text-right">
-                <p className="text-[15px] font-black tracking-tight text-foreground">
+                <p className="text-sm font-semibold text-card-foreground">
                   ${user.totalExpenses.toLocaleString()}
                 </p>
-                <div className="flex items-center justify-end gap-1 font-bold text-emerald-500">
+                <div className="flex items-center justify-end gap-1 text-primary">
                   <TrendingUp className="h-3 w-3" />
-                  <span className="text-[11px]">{user.trend}</span>
+                  <span className="text-xs">{user.trend}</span>
                 </div>
               </div>
             </div>

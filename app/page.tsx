@@ -15,15 +15,17 @@ export default function DashboardPage() {
       <div className="hidden lg:block">
         <DashboardSidebar />
       </div>
-      
+
       {/* Main Content */}
       <div className="lg:pl-64 transition-all duration-300">
+        {/* Header */}
+        <DashboardHeader />
+
         {/* Dashboard Content */}
-        <main className="p-4 md:p-6 space-y-6 pt-10">
-          
+        <main className="p-4 md:p-6 space-y-6">
           {/* Stats Cards */}
           <StatsCards />
-          
+
           {/* Charts Row */}
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2">
@@ -33,13 +35,13 @@ export default function DashboardPage() {
               <CategoryChart />
             </div>
           </div>
-          
+
           {/* Transactions and Groups Row */}
           <div className="grid gap-6 xl:grid-cols-2">
             <RecentTransactions />
             <ActiveGroups />
           </div>
-          
+
           {/* Top Users */}
           <TopUsers />
         </main>

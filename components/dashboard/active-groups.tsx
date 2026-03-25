@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { 
+import {
   ChevronRight,
   Users,
   Plane,
@@ -62,14 +62,14 @@ const groups = [
 export function ActiveGroups() {
   return (
     <Card className="bg-card border-border h-full flex flex-col">
-      <CardHeader className="flex flex-row items-center justify-between pb-2 px-6">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div>
           <CardTitle className="text-lg font-semibold text-card-foreground">Active Groups</CardTitle>
           <CardDescription className="text-muted-foreground">
             Top groups by recent activity
           </CardDescription>
         </div>
-        <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5 hover:text-primary">
+        <Button variant="ghost" size="sm" className="text-primary">
           View All <ChevronRight className="ml-1 h-4 w-4" />
         </Button>
       </CardHeader>

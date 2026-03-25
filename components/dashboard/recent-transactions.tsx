@@ -4,9 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { 
-  ArrowUpRight, 
-  ArrowDownLeft, 
+import {
+  ArrowUpRight,
+  ArrowDownLeft,
   MoreHorizontal,
   ChevronRight
 } from "lucide-react"
@@ -69,22 +69,22 @@ const transactions = [
 export function RecentTransactions() {
   return (
     <Card className="bg-card border-border h-full flex flex-col">
-      <CardHeader className="flex flex-row items-center justify-between pb-2 px-6">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div>
           <CardTitle className="text-lg font-semibold text-card-foreground">Recent Transactions</CardTitle>
           <CardDescription className="text-muted-foreground">
             Latest expense and settlement activity
           </CardDescription>
         </div>
-        <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5 hover:text-primary">
+        <Button variant="ghost" size="sm" className="text-primary">
           View All <ChevronRight className="ml-1 h-4 w-4" />
         </Button>
       </CardHeader>
       <CardContent className="px-6 pb-6 pt-2">
         <div className="space-y-4">
           {transactions.slice(0, 5).map((transaction) => (
-            <div 
-              key={transaction.id} 
+            <div
+              key={transaction.id}
               className="flex items-center gap-4 rounded-lg border border-border bg-secondary/30 p-4 transition-colors hover:bg-secondary/50"
             >
               <Avatar className="h-10 w-10 shrink-0">
@@ -98,8 +98,8 @@ export function RecentTransactions() {
                   <p className="truncate text-sm font-medium text-card-foreground">
                     {transaction.description}
                   </p>
-                  <Badge 
-                    variant="outline" 
+                  <Badge
+                    variant="outline"
                     className={cn(
                       "shrink-0 text-[10px] px-1.5 h-4",
                       transaction.status === "settled" && "border-primary/50 text-primary",

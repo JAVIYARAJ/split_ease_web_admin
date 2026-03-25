@@ -153,8 +153,10 @@ export function DashboardSidebar() {
               </div>
             )}
             {!collapsed && (
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground shrink-0">
-                <LogOut className="h-4 w-4" />
+              <Button asChild variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground shrink-0 hover:text-destructive hover:bg-destructive/10">
+                <Link href="/login">
+                  <LogOut className="h-4 w-4" />
+                </Link>
               </Button>
             )}
           </div>
