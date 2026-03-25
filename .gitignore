@@ -1,0 +1,28 @@
+# v0 runtime files
+__v0_runtime_loader.js
+__v0_devtools.tsx
+__v0_jsx-dev-runtime.ts
+
+# Dependencies
+node_modules/
+.pnpm-debug.log*
+
+# Next.js
+.next/
+out/
+
+# Production
+build/
+dist/
+
+# Env
+.env
+.env*.local
+
+# Tests & Coverage
+coverage/
+.nyc_output/
+
+# OS
+.DS_Store
+Thumbs.db
