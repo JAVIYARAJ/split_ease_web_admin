@@ -1,67 +1,86 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Eye, EyeOff, Lock, Mail, ShieldCheck, ArrowRight, Sparkles, LayoutDashboard, Database, LockKeyhole } from "lucide-react"
+import { Eye, EyeOff, Lock, Mail, ShieldCheck, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 
 export default function LoginPage() {
+  const router = useRouter()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    // Simulate login
-    setTimeout(() => setIsLoading(false), 2000)
+
+    const supabase = createClient()
+
+    // Step 1: Sign in
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (signInError) {
+      toast.error(signInError.message)
+      setIsLoading(false)
+      return
+    }
+
+    // Step 2: Verify admin access via RPC
+    // RPC returns: { message: string, is_admin: boolean }
+    const { data: adminCheck, error: rpcError } = await supabase.rpc("check_admin_access_rpc")
+
+    if (rpcError || !adminCheck?.is_admin) {
+      // Not an admin — sign out immediately and reject
+      await supabase.auth.signOut()
+      toast.error(adminCheck?.message ?? "Access Denied. You do not have admin privileges.")
+      setIsLoading(false)
+      return
+    }
+
+    // Step 3: Admin confirmed — proceed to dashboard
+    toast.success("Welcome back!")
+    router.push("/")
+    router.refresh()
   }
 
   const features = [
-    { icon: LayoutDashboard, title: "Precision Control", desc: "Unified dashboard for group management." },
-    { icon: Database, title: "Scale Ready", desc: "Enterprise-grade database performance." },
-    { icon: LockKeyhole, title: "End-to-End Encryption", desc: "Highest standard for secure settlements." },
+    { icon: ShieldCheck, title: "Precision Control", desc: "Unified dashboard for group management." },
+    { icon: ShieldCheck, title: "Scale Ready", desc: "Enterprise-grade database performance." },
+    { icon: ShieldCheck, title: "End-to-End Encryption", desc: "Highest standard for secure settlements." },
   ]
 
   return (
     <div className="relative min-h-screen w-full flex overflow-hidden bg-[#050505]">
-      {/* 🌲 The Left visual Panel - "Deep Forest" */}
-      <div className="relative hidden w-[55%] flex-col justify-between p-20 lg:flex overflow-hidden">
-        {/* Cinematic Visual Background */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src="/Users/rajjaviya/.gemini/antigravity/brain/eb21fd99-d13a-49a1-8a7d-d14f794cc9c8/login_visual_abstract_1774475357257.png"
-            alt="Admin Visual"
-            className="h-full w-full object-cover opacity-50 contrast-125"
-          />
-          <div className="absolute inset-0 bg-gradient-to-tr from-[#050505] via-[#050505]/40 to-transparent" />
-        </div>
+      {/* 🌲 Left Section - Persisting the User's Dark Design */}
+      <div className="relative hidden w-[45%] flex-col justify-between p-20 lg:flex overflow-hidden bg-[#050505] border-r border-white/5">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(34,197,94,0.05)_0%,transparent_70%)]" />
 
-        {/* Branding & Status */}
-        <div className="relative z-10 flex items-center justify-between">
+        {/* Branding */}
+        <div className="relative z-10">
           <Link href="/" className="flex items-center gap-4 group">
-            <div className="flex h-12 w-12 items-center justify-center rounded-[20px] bg-primary shadow-[0_0_40px_-5px_rgba(var(--primary-rgb),0.6)] group-hover:scale-110 transition-all duration-700">
+            <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-primary shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)] transition-transform group-hover:scale-110">
               <ShieldCheck className="h-7 w-7 text-primary-foreground" />
             </div>
-            <div className="flex flex-col -space-y-1">
-              <span className="text-2xl font-black tracking-tight text-white uppercase">SplitEase</span>
-              <span className="text-[10px] font-black text-primary/60 tracking-[0.5em] uppercase">Enterprise</span>
-            </div>
+            <span className="text-2xl font-black tracking-tight text-white italic">SplitEase</span>
           </Link>
-          <div className="h-2 w-2 rounded-full bg-primary animate-ping" />
         </div>
 
         {/* Cinematic Content Section */}
         <div className="relative z-10 max-w-lg space-y-16">
-          <div className="space-y-6">
-            <h1 className="text-7xl font-black leading-[0.95] tracking-tighter text-white">
-              Built for <br />
-              <span className="text-primary">Performance.</span>
+          <div className="space-y-4">
+            <h1 className="text-6xl font-black leading-[1] tracking-tighter text-white">
+              Built for <br/>
+              <span className="text-primary truncate">Performance.</span>
             </h1>
-            <p className="text-xl font-medium text-white/30 leading-relaxed max-w-sm font-sans">
+            <p className="text-xl font-medium text-white/30 leading-relaxed max-w-sm">
               Experience the pinnacle of platform administration and financial auditing.
             </p>
           </div>
@@ -69,12 +88,12 @@ export default function LoginPage() {
           <div className="space-y-10">
             {features.map((feature, i) => (
               <div key={i} className="flex items-center gap-6 group cursor-default">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 border border-white/10 transition-all group-hover:bg-primary group-hover:border-primary group-hover:text-primary-foreground">
-                  <feature.icon className="h-6 w-6 text-white/20 group-hover:text-inherit" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 border border-white/10 transition-all group-hover:bg-primary group-hover:border-primary">
+                  <feature.icon className="h-5 w-5 text-white/20 group-hover:text-primary-foreground" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-sm font-black uppercase tracking-widest text-white/80 group-hover:text-primary transition-colors">{feature.title}</h3>
-                  <p className="text-[11px] font-bold text-white/20 leading-relaxed max-w-[240px] italic">{feature.desc}</p>
+                  <h3 className="text-sm font-black tracking-widest text-white/80 group-hover:text-primary transition-colors">{feature.title}</h3>
+                  <p className="text-[13px] font-medium text-white/20 leading-relaxed max-w-[240px] italic">{feature.desc}</p>
                 </div>
               </div>
             ))}
@@ -82,103 +101,98 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* 🛰️ The Right Login Panel - "Mist Charcoal" */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8 sm:p-24 relative bg-[#0A0A0A] border-l border-white/5">
-        {/* Subtle radial inner glow for premium feel */}
-        <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-primary/[0.03] blur-[200px] -z-10" />
+      {/* 🔐 Right Section - "Standard" Design with a "Dark Modern" Scheme */}
+      <div className="flex-1 flex flex-col items-center justify-center p-8 sm:p-20 bg-[#080808]">
+        {/* Mobile Branding */}
+        <div className="lg:hidden mb-12 flex items-center gap-3">
+           <ShieldCheck className="h-10 w-10 text-primary" />
+           <span className="text-3xl font-black tracking-tighter text-white italic">SplitEase</span>
+        </div>
 
-        <div className="w-full max-w-[420px] space-y-14 animate-in fade-in slide-in-from-right-16 duration-1000">
-          <div className="space-y-4 text-center sm:text-left">
-            <h2 className="text-5xl font-black tracking-tighter text-white">Security Check</h2>
-            <p className="text-base font-bold text-white/20 uppercase tracking-[0.25em]">Authorized Access Protocols Only</p>
+        <div className="w-full max-w-[420px] space-y-10 animate-in fade-in slide-in-from-right-8 duration-700">
+          <div className="text-center sm:text-left space-y-3">
+            <h2 className="text-5xl font-black tracking-tighter text-white leading-tight">Identity Check</h2>
+            <p className="text-lg font-bold text-white/20 tracking-[0.2em]">Authorized Entrance Only</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="space-y-3.5 group/field">
-              <Label htmlFor="email" className="text-[11px] font-black uppercase tracking-[0.4em] text-white/20 ml-2 transition-colors group-focus-within/field:text-primary">
-                Administrator Identifier
-              </Label>
-              <div className="relative group">
-                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-primary transition-all duration-500">
-                  <Mail className="h-5 w-5" />
-                </div>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="admin.id@splitease.core"
-                  required
-                  className="h-16 pl-15 rounded-[24px] bg-white/[0.02] border-white/5 focus:border-primary/40 focus:bg-white/[0.04] focus:ring-8 focus:ring-primary/5 transition-all duration-500 font-bold text-white text-lg placeholder:text-white/5"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-3.5 group/field">
-              <div className="flex items-center justify-between ml-2">
-                <Label htmlFor="password" className="text-[11px] font-black uppercase tracking-[0.4em] text-white/20 transition-colors group-focus-within/field:text-primary">
-                  Access Security Key
+          {/* Elevated Professional Dark Card */}
+          <div className="bg-[#111111] p-8 sm:p-14 rounded-[40px] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] border border-white/5 relative group/card overflow-hidden">
+            {/* Subtle glow edge */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+            
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="space-y-3">
+                <Label htmlFor="email" className="text-[13px] font-black tracking-widest text-white/30 ml-2">
+                  Email Address
                 </Label>
-                <Link href="#" className="text-[10px] font-black text-primary/30 hover:text-primary transition-all tracking-[0.2em] uppercase italic">
-                  Recovery
-                </Link>
-              </div>
-              <div className="relative group">
-                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-primary transition-all duration-500">
-                  <Lock className="h-5 w-5" />
+                <div className="relative group/field">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/10 group-focus-within/field:text-primary transition-colors">
+                    <Mail className="h-5.5 w-5.5" />
+                  </div>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="admin@splitease.com" 
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="h-16 pl-14 rounded-2xl bg-[#080808] border-white/5 focus:border-primary/40 focus:bg-black focus:ring-8 focus:ring-primary/5 transition-all font-bold text-white text-base shadow-none"
+                  />
                 </div>
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••••••"
-                  required
-                  className="h-16 pl-15 pr-15 rounded-[24px] bg-white/[0.02] border-white/5 focus:border-primary/40 focus:bg-white/[0.04] focus:ring-8 focus:ring-primary/5 transition-all duration-500 font-bold text-white text-lg placeholder:text-white/5"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-6 top-1/2 -translate-y-1/2 text-white/10 hover:text-white transition-colors"
-                >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                </button>
               </div>
-            </div>
 
-            <div className="flex items-center gap-4 group cursor-pointer ml-2 pt-2">
-              <Checkbox id="remember" className="h-5 w-5 rounded-md border-white/10 transition-all data-[state=checked]:bg-primary data-[state=checked]:border-primary" />
-              <Label htmlFor="remember" className="text-[12px] font-black text-white/20 cursor-pointer group-hover:text-white/40 transition-colors uppercase tracking-[0.3em]">
-                Secure Persistent Link
-              </Label>
-            </div>
-
-            <Button
-              type="submit"
-              className={cn(
-                "w-full h-18 rounded-[24px] text-lg font-black transition-all duration-700",
-                "bg-primary text-primary-foreground hover:scale-[1.02] shadow-[0_20px_50px_-10px_rgba(var(--primary-rgb),0.5)]",
-                "active:scale-95 group overflow-hidden relative",
-                isLoading && "opacity-80 cursor-not-allowed"
-              )}
-              disabled={isLoading}
-            >
-              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
-              {isLoading ? (
-                <div className="flex items-center gap-3">
-                  <div className="h-5 w-5 border-[3px] border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                  <span className="tracking-[0.3em] uppercase">Validating</span>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between ml-2">
+                  <Label htmlFor="password" className="text-[13px] font-black tracking-widest text-white/30">
+                    Secure Password
+                  </Label>
                 </div>
-              ) : (
-                <span className="flex items-center gap-3 tracking-[0.3em] uppercase relative z-10">
-                  ESTABLISH CONNECTION <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
-                </span>
-              )}
-            </Button>
-          </form>
-
-          <footer className="pt-20 text-center">
-            <p className="text-[10px] font-black text-white/[0.03] uppercase tracking-[0.6em] italic leading-loose">
-              System Authorization Required <br />
-              Identity Segment: ALPHA-SEC-CORE
-            </p>
-          </footer>
+                <div className="relative group/field">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/10 group-focus-within/field:text-primary transition-colors">
+                    <Lock className="h-5.5 w-5.5" />
+                  </div>
+                  <Input 
+                    id="password" 
+                    type={showPassword ? "text" : "password"} 
+                    placeholder="••••••••••••" 
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-16 pl-14 pr-14 rounded-2xl bg-[#080808] border-white/5 focus:border-primary/40 focus:bg-black focus:ring-8 focus:ring-primary/5 transition-all font-bold text-white text-base shadow-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/10 hover:text-white transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="h-5.5 w-5.5" /> : <Eye className="h-5.5 w-5.5" />}
+                  </button>
+                </div>
+              </div>
+              <Button 
+                type="submit" 
+                className={cn(
+                  "w-full h-18 rounded-[24px] text-lg font-black transition-all duration-700 shadow-2xl relative overflow-hidden group/btn",
+                  "bg-primary text-primary-foreground hover:scale-[1.02] shadow-primary/30",
+                  "active:scale-95",
+                  isLoading && "opacity-80 cursor-not-allowed"
+                )}
+                disabled={isLoading}
+              >
+                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+                {isLoading ? (
+                  <div className="flex items-center gap-3">
+                    <div className="h-6 w-6 border-4 border-background/20 border-t-background rounded-full animate-spin" />
+                    <span className="tracking-[0.2em]">Validating</span>
+                  </div>
+                ) : (
+                  <span className="flex items-center gap-4 relative z-10 tracking-[0.2em]">
+                    Login <ArrowRight className="h-6 w-6" />
+                  </span>
+                )}
+              </Button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

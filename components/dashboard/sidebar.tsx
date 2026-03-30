@@ -17,8 +17,10 @@ import {
   ChevronRight
 } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -59,6 +61,15 @@ const navigationItems = [
 export function DashboardSidebar() {
   const [collapsed, setCollapsed] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    toast.success("Logged out successfully")
+    router.push("/login")
+    router.refresh()
+  }
 
   return (
     <aside className={cn(
@@ -153,10 +164,13 @@ export function DashboardSidebar() {
               </div>
             )}
             {!collapsed && (
-              <Button asChild variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground shrink-0 hover:text-destructive hover:bg-destructive/10">
-                <Link href="/login">
-                  <LogOut className="h-4 w-4" />
-                </Link>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground shrink-0 hover:text-destructive hover:bg-destructive/10"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4" />
               </Button>
             )}
           </div>

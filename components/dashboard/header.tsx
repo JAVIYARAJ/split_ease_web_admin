@@ -31,6 +31,9 @@ import {
 } from "@/components/ui/sheet"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 import {
   LayoutDashboard,
   Users as UsersIcon,
@@ -94,6 +97,15 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ title = "Dashboard Overview", description = "Welcome back, Admin" }: DashboardHeaderProps) {
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    toast.success("Logged out successfully")
+    router.push("/login")
+    router.refresh()
+  }
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 md:px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex items-center gap-4">
@@ -194,7 +206,10 @@ export function DashboardHeader({ title = "Dashboard Overview", description = "W
               Help & Support
             </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-border" />
-            <DropdownMenuItem className="text-destructive focus:bg-secondary focus:text-destructive">
+            <DropdownMenuItem
+              className="text-destructive focus:bg-secondary focus:text-destructive cursor-pointer"
+              onClick={handleLogout}
+            >
               <LogOut className="mr-2 h-4 w-4" />
               Log out
             </DropdownMenuItem>

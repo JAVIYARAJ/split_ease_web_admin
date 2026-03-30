@@ -48,7 +48,7 @@ export default function RootLayout({
         >
           {children}
           <Toaster />
-          <Sonner />
+          <Sonner position="top-right" />
           <Analytics />
         </ThemeProvider>
       </body>
