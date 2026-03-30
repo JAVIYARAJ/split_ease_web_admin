@@ -34,6 +34,7 @@ import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
+import { useUser } from "@/lib/context/user-context"
 import {
   LayoutDashboard,
   Users as UsersIcon,
@@ -96,15 +97,15 @@ interface DashboardHeaderProps {
   description?: string
 }
 
-export function DashboardHeader({ title = "Dashboard Overview", description = "Welcome back, Admin" }: DashboardHeaderProps) {
+export function DashboardHeader({ title = "Dashboard Overview", description }: DashboardHeaderProps) {
   const router = useRouter()
+  const { displayName, email, initials, logout } = useUser()
+  
+  const displayDescription = description || `Welcome back, ${displayName}`
 
   const handleLogout = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
+    await logout()
     toast.success("Logged out successfully")
-    router.push("/login")
-    router.refresh()
   }
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 md:px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -125,6 +126,9 @@ export function DashboardHeader({ title = "Dashboard Overview", description = "W
           <h1 className="text-xl md:text-3xl font-bold tracking-tight text-foreground truncate whitespace-nowrap">
             {title}
           </h1>
+          <p className="text-xs text-muted-foreground hidden md:block">
+            {displayDescription}
+          </p>
         </div>
       </div>
       
@@ -184,7 +188,7 @@ export function DashboardHeader({ title = "Dashboard Overview", description = "W
             <Button variant="ghost" className="gap-2 text-foreground">
               <Avatar className="h-8 w-8">
                 <AvatarImage src="" />
-                <AvatarFallback className="bg-primary text-primary-foreground text-sm">AD</AvatarFallback>
+                <AvatarFallback className="bg-primary text-primary-foreground text-sm">{initials}</AvatarFallback>
               </Avatar>
               <ChevronDown className="h-4 w-4 text-muted-foreground hidden sm:block" />
             </Button>
@@ -192,8 +196,8 @@ export function DashboardHeader({ title = "Dashboard Overview", description = "W
           <DropdownMenuContent align="end" className="w-56 bg-card border-border">
             <DropdownMenuLabel className="text-foreground">
               <div className="flex flex-col">
-                <span>Admin User</span>
-                <span className="text-xs font-normal text-muted-foreground">admin@splitease.com</span>
+                <span>{displayName}</span>
+                <span className="text-xs font-normal text-muted-foreground">{email}</span>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-border" />

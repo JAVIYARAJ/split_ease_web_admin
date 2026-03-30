@@ -2,102 +2,107 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChevronRight, TrendingUp } from "lucide-react"
+import { ChevronRight, TrendingUp, Users } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 
-const users = [
-  {
-    id: 1,
-    name: "Sarah Miller",
-    email: "sarah@example.com",
-    initials: "SM",
-    totalExpenses: 12450,
-    groups: 8,
-    trend: "+15%"
-  },
-  {
-    id: 2,
-    name: "James Wilson",
-    email: "james@example.com",
-    initials: "JW",
-    totalExpenses: 9820,
-    groups: 5,
-    trend: "+8%"
-  },
-  {
-    id: 3,
-    name: "Emma Davis",
-    email: "emma@example.com",
-    initials: "ED",
-    totalExpenses: 8540,
-    groups: 6,
-    trend: "+22%"
-  },
-  {
-    id: 4,
-    name: "Michael Brown",
-    email: "michael@example.com",
-    initials: "MB",
-    totalExpenses: 7230,
-    groups: 4,
-    trend: "+5%"
-  },
-  {
-    id: 5,
-    name: "Olivia Taylor",
-    email: "olivia@example.com",
-    initials: "OT",
-    totalExpenses: 6890,
-    groups: 7,
-    trend: "+12%"
-  }
-]
+interface User {
+  id: string
+  avtar: string | null
+  full_name: string
+  total_spent: number
+  total_groups: number
+}
 
-export function TopUsers() {
+interface TopUsersProps {
+  data: User[]
+  loading?: boolean
+}
+
+export function TopUsers({ data, loading }: TopUsersProps) {
+  const renderSkeletons = () => (
+    <div className="space-y-4">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="flex items-center gap-4">
+          <Skeleton className="h-4 w-4 bg-muted/20" />
+          <Skeleton className="h-10 w-10 rounded-full bg-muted/20" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-4 w-1/2 bg-muted/20" />
+            <Skeleton className="h-3 w-1/4 bg-muted/20" />
+          </div>
+          <div className="text-right space-y-2">
+            <Skeleton className="h-4 w-16 bg-muted/20 ml-auto" />
+            <Skeleton className="h-3 w-10 bg-muted/20 ml-auto" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+
   return (
-    <Card className="bg-card border-border">
+    <Card className="bg-card border-border group overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <div>
-          <CardTitle className="text-lg font-semibold text-card-foreground">Top Users</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Most active users by expenses
+        <div className="space-y-1">
+          <CardTitle className="text-lg font-black tracking-tight text-card-foreground">Top Active Users</CardTitle>
+          <CardDescription className="text-[13px] font-medium text-muted-foreground italic">
+            Most active platform participants by spending volume
           </CardDescription>
         </div>
-        <Button variant="ghost" size="sm" className="text-primary">
-          View All <ChevronRight className="ml-1 h-4 w-4" />
+        <Button variant="ghost" size="sm" className="text-primary font-black uppercase tracking-widest text-[10px] hover:bg-primary/10">
+          Rankings <ChevronRight className="ml-1 h-3.5 w-3.5" />
         </Button>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {users.map((user, index) => (
-            <div key={user.id} className="flex items-center gap-4">
-              <span className="w-6 text-center text-sm font-medium text-muted-foreground">
-                {index + 1}
-              </span>
-              <Avatar className="h-10 w-10">
-                <AvatarImage src="" />
-                <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                  {user.initials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="truncate text-sm font-medium text-card-foreground">{user.name}</p>
-                <p className="text-xs text-muted-foreground">{user.groups} groups</p>
+        {loading ? renderSkeletons() : (
+          <div className="space-y-4">
+            {data.length === 0 ? (
+               <div className="h-full flex flex-col items-center justify-center py-10 opacity-40">
+                <p className="text-sm font-black uppercase tracking-widest text-muted-foreground">No data available</p>
               </div>
-              <div className="text-right">
-                <p className="text-sm font-semibold text-card-foreground">
-                  ${user.totalExpenses.toLocaleString()}
-                </p>
-                <div className="flex items-center justify-end gap-1 text-primary">
-                  <TrendingUp className="h-3 w-3" />
-                  <span className="text-xs">{user.trend}</span>
+            ) : data.map((user, index) => {
+              const initials = user.full_name
+                .split(' ')
+                .map(n => n[0])
+                .join('')
+                .toUpperCase()
+
+              return (
+                <div 
+                  key={user.id} 
+                  className="flex items-center gap-4 rounded-xl border border-transparent hover:border-white/5 hover:bg-secondary/20 p-2 transition-all duration-300"
+                >
+                  <span className="w-6 text-center text-[10px] font-black text-muted-foreground/60 font-mono tracking-tighter">
+                    #{index + 1}
+                  </span>
+                  <Avatar className="h-10 w-10 ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
+                    <AvatarImage src={user.avtar || undefined} className="object-cover" />
+                    <AvatarFallback className="bg-primary/10 text-primary font-black text-xs">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="truncate text-sm font-black text-card-foreground tracking-tight">{user.full_name}</p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <Users className="h-2.5 w-2.5 text-muted-foreground" />
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">{user.total_groups} groups joined</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-black text-card-foreground tracking-tighter">
+                      ₹{user.total_spent.toLocaleString()}
+                    </p>
+                    <div className="flex items-center justify-end gap-1 text-primary">
+                      <TrendingUp className="h-3 w-3" />
+                      <span className="text-[10px] font-black uppercase tracking-tighter">Active</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
+              )
+            })}
+          </div>
+        )}
       </CardContent>
     </Card>
   )
 }
+

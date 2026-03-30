@@ -7,144 +7,146 @@ import { Button } from "@/components/ui/button"
 import {
   ArrowUpRight,
   ArrowDownLeft,
+  ChevronRight,
   MoreHorizontal,
-  ChevronRight
+  Users,
+  Clock
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Skeleton } from "@/components/ui/skeleton"
+import { formatDistanceToNow } from "date-fns"
 
-const transactions = [
-  {
-    id: 1,
-    user: { name: "Sarah Miller", avatar: "", initials: "SM" },
-    description: "Dinner at Italian Restaurant",
-    group: "Weekend Trip",
-    amount: 156.50,
-    type: "expense",
-    status: "settled",
-    date: "2 hours ago"
-  },
-  {
-    id: 2,
-    user: { name: "James Wilson", avatar: "", initials: "JW" },
-    description: "Uber to Airport",
-    group: "Business Trip",
-    amount: 45.00,
-    type: "expense",
-    status: "pending",
-    date: "5 hours ago"
-  },
-  {
-    id: 3,
-    user: { name: "Emma Davis", avatar: "", initials: "ED" },
-    description: "Settlement Payment",
-    group: "Roommates",
-    amount: 320.00,
-    type: "settlement",
-    status: "completed",
-    date: "1 day ago"
-  },
-  {
-    id: 4,
-    user: { name: "Michael Brown", avatar: "", initials: "MB" },
-    description: "Groceries",
-    group: "Household",
-    amount: 89.75,
-    type: "expense",
-    status: "settled",
-    date: "1 day ago"
-  },
-  {
-    id: 5,
-    user: { name: "Olivia Taylor", avatar: "", initials: "OT" },
-    description: "Movie Tickets",
-    group: "Friends",
-    amount: 64.00,
-    type: "expense",
-    status: "pending",
-    date: "2 days ago"
-  }
-]
+interface Transaction {
+  id: string
+  type: 'expense' | 'settlement'
+  avtar: string | null
+  full_name: string
+  created_at: string
+  group_name: string | null
+  description: string
+  total_amount: number
+}
 
-export function RecentTransactions() {
+interface RecentTransactionsProps {
+  data: Transaction[]
+  loading?: boolean
+}
+
+export function RecentTransactions({ data, loading }: RecentTransactionsProps) {
+  const renderSkeletons = () => (
+    <div className="space-y-4">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="flex items-center gap-4 rounded-lg border border-border bg-secondary/10 p-4">
+          <Skeleton className="h-10 w-10 rounded-full bg-muted/20" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-4 w-3/4 bg-muted/20" />
+            <Skeleton className="h-3 w-1/2 bg-muted/20" />
+          </div>
+          <Skeleton className="h-8 w-16 bg-muted/20" />
+        </div>
+      ))}
+    </div>
+  )
+
   return (
-    <Card className="bg-card border-border h-full flex flex-col">
+    <Card className="bg-card border-border h-full flex flex-col group overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <div>
-          <CardTitle className="text-lg font-semibold text-card-foreground">Recent Transactions</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Latest expense and settlement activity
+        <div className="space-y-1">
+          <CardTitle className="text-lg font-black tracking-tight text-card-foreground">Recent Transactions</CardTitle>
+          <CardDescription className="text-[13px] font-medium text-muted-foreground italic">
+            Latest platform expense and settlement activity
           </CardDescription>
         </div>
-        <Button variant="ghost" size="sm" className="text-primary">
-          View All <ChevronRight className="ml-1 h-4 w-4" />
+        <Button variant="ghost" size="sm" className="text-primary font-black uppercase tracking-widest text-[10px] hover:bg-primary/10">
+          View All <ChevronRight className="ml-1 h-3.5 w-3.5" />
         </Button>
       </CardHeader>
-      <CardContent className="px-6 pb-6 pt-2">
-        <div className="space-y-4">
-          {transactions.slice(0, 5).map((transaction) => (
-            <div
-              key={transaction.id}
-              className="flex items-center gap-4 rounded-lg border border-border bg-secondary/30 p-4 transition-colors hover:bg-secondary/50"
-            >
-              <Avatar className="h-10 w-10 shrink-0">
-                <AvatarImage src={transaction.user.avatar} />
-                <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                  {transaction.user.initials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="truncate text-sm font-medium text-card-foreground">
-                    {transaction.description}
-                  </p>
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      "shrink-0 text-[10px] px-1.5 h-4",
-                      transaction.status === "settled" && "border-primary/50 text-primary",
-                      transaction.status === "pending" && "border-yellow-500/50 text-yellow-500",
-                      transaction.status === "completed" && "border-primary/50 text-primary"
-                    )}
-                  >
-                    {transaction.status}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-2 mt-1">
-                  <p className="text-[11px] text-muted-foreground truncate">{transaction.user.name}</p>
-                  <span className="text-muted-foreground opacity-50">•</span>
-                  <p className="text-[11px] text-muted-foreground truncate">{transaction.group}</p>
-                  <span className="text-muted-foreground opacity-50">•</span>
-                  <p className="text-[11px] text-muted-foreground truncate whitespace-nowrap">{transaction.date}</p>
-                </div>
+      <CardContent className="px-6 pb-6 pt-2 h-[450px] overflow-y-auto custom-scrollbar">
+        {loading ? renderSkeletons() : (
+          <div className="space-y-4">
+            {data.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center py-10 opacity-40">
+                <p className="text-sm font-black uppercase tracking-widest text-muted-foreground">No recent activity</p>
               </div>
-              <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-                <div className="text-right">
-                  <p className={cn(
-                    "text-sm font-bold",
-                    transaction.type === "settlement" ? "text-primary" : "text-card-foreground"
-                  )}>
-                    {transaction.type === "settlement" ? "+" : "-"}${transaction.amount.toFixed(2)}
-                  </p>
+            ) : data.map((transaction) => {
+              const date = new Date(transaction.created_at)
+              const initials = transaction.full_name
+                .split(' ')
+                .map(n => n[0])
+                .join('')
+                .toUpperCase()
+
+              return (
+                <div
+                  key={transaction.id}
+                  className="flex items-center gap-4 rounded-xl border border-border/50 bg-secondary/20 p-4 transition-all duration-300 hover:bg-secondary/40 hover:border-primary/20 hover:translate-x-1"
+                >
+                  <Avatar className="h-10 w-10 shrink-0 ring-2 ring-transparent group-hover:ring-primary/20 transition-all border border-white/5">
+                    <AvatarImage src={transaction.avtar || undefined} className="object-cover" />
+                    <AvatarFallback className="bg-primary/10 text-primary font-black text-xs">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0 ml-1">
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-sm font-black text-card-foreground tracking-tight">
+                        {transaction.description}
+                      </p>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "shrink-0 text-[9px] font-black uppercase tracking-tighter px-1.5 h-4 border-none",
+                          transaction.type === "expense" ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
+                        )}
+                      >
+                        {transaction.type}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1.5 overflow-hidden">
+                      <p className="text-[10px] font-bold text-muted-foreground truncate uppercase tracking-widest leading-none">{transaction.full_name}</p>
+                      <span className="h-1 w-1 rounded-full bg-muted-foreground/30 shrink-0" />
+                      <p className="text-[10px] font-black text-primary/80 truncate uppercase tracking-widest leading-none">
+                        {transaction.group_name || 'Personal'}
+                      </p>
+                      <span className="h-1 w-1 rounded-full bg-muted-foreground/30 shrink-0" />
+                      <p className="text-[10px] font-bold text-muted-foreground/60 truncate whitespace-nowrap uppercase tracking-widest leading-none">
+                        {formatDistanceToNow(date, { addSuffix: true })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+                    <div className="text-right">
+                      <p className={cn(
+                        "text-[15px] font-black tracking-tighter leading-none mb-1",
+                        transaction.type === "settlement" ? "text-primary" : "text-card-foreground"
+                      )}>
+                        {transaction.type === "settlement" ? "+" : "-"}₹{transaction.total_amount.toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                      </p>
+                      <p className="text-[8px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] leading-none">
+                        {transaction.type === "settlement" ? 'Credit' : 'Debit'}
+                      </p>
+                    </div>
+                    <div className={cn(
+                      "hidden xs:flex h-8 w-8 items-center justify-center rounded-xl shrink-0 border border-white/5 shadow-sm",
+                      transaction.type === "settlement" ? "bg-primary/10" : "bg-destructive/10"
+                    )}>
+                      {transaction.type === "settlement" ? (
+                        <ArrowDownLeft className="h-4 w-4 text-primary" />
+                      ) : (
+                        <ArrowUpRight className="h-4 w-4 text-destructive" />
+                      )}
+                    </div>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div className={cn(
-                  "hidden xs:flex h-8 w-8 items-center justify-center rounded-full shrink-0",
-                  transaction.type === "settlement" ? "bg-primary/10" : "bg-destructive/10"
-                )}>
-                  {transaction.type === "settlement" ? (
-                    <ArrowDownLeft className="h-4 w-4 text-primary" />
-                  ) : (
-                    <ArrowUpRight className="h-4 w-4 text-destructive" />
-                  )}
-                </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
+              )
+            })}
+          </div>
+        )}
       </CardContent>
     </Card>
   )
 }
+

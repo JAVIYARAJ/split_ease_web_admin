@@ -34,7 +34,7 @@ export function ComingSoon({ title, description = "We're working hard to bring t
 
       <div className="flex flex-col sm:flex-row gap-4 animate-in slide-in-from-bottom-8 duration-700 delay-300">
         <Button asChild size="lg" className="h-14 px-8 rounded-2xl gap-2 text-lg font-bold shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95">
-          <Link href="/">
+          <Link href="/dashboard">
             <ArrowLeft className="h-5 w-5" />
             Back to Dashboard
           </Link>

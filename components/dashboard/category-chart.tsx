@@ -4,11 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
 
 const data = [
-  { name: "Food & Dining", value: 35, color: "oklch(0.72 0.19 160)" },
-  { name: "Travel", value: 25, color: "oklch(0.7 0.15 250)" },
-  { name: "Utilities", value: 18, color: "oklch(0.75 0.18 80)" },
-  { name: "Entertainment", value: 12, color: "oklch(0.65 0.2 340)" },
-  { name: "Shopping", value: 10, color: "oklch(0.7 0.15 200)" }
+  { name: "Food & Dining", value: 35, color: "var(--chart-1)" },
+  { name: "Travel", value: 25, color: "var(--chart-2)" },
+  { name: "Utilities", value: 18, color: "var(--chart-3)" },
+  { name: "Entertainment", value: 12, color: "var(--chart-4)" },
+  { name: "Shopping", value: 10, color: "var(--chart-5)" }
 ]
 
 export function CategoryChart() {
@@ -32,18 +32,29 @@ export function CategoryChart() {
                 outerRadius={80}
                 paddingAngle={5}
                 dataKey="value"
+                stroke="none"
+                style={{ outline: 'none' }}
               >
                 {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={entry.color}
+                    className="hover:opacity-80 transition-opacity cursor-pointer outline-none"
+                    style={{ outline: 'none' }}
+                  />
                 ))}
               </Pie>
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: 'oklch(0.16 0.01 260)', 
-                  border: '1px solid oklch(0.28 0.01 260)',
-                  borderRadius: '8px',
-                  color: 'oklch(0.98 0 0)'
+                  backgroundColor: 'var(--card)', 
+                  border: '1px solid var(--border)',
+                  borderRadius: '12px',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.4)',
+                  color: 'var(--foreground)',
+                  padding: '12px',
+                  fontSize: '12px'
                 }}
+                itemStyle={{ fontWeight: 'bold' }}
                 formatter={(value: number) => [`${value}%`, '']}
               />
             </PieChart>

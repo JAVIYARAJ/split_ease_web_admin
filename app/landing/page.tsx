@@ -7,7 +7,9 @@ import {
   Check,
   ChevronDown,
   DollarSign,
+  Globe,
   LayoutDashboard,
+  Receipt,
   ShieldCheck,
   Sparkles,
   Users,
@@ -141,7 +143,7 @@ function NavBar() {
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group" id="nav-logo">
+        <Link href="/landing" className="flex items-center gap-3 group" id="nav-logo">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-transform group-hover:scale-110">
             <DollarSign className="h-5 w-5 text-black" />
           </div>
@@ -248,11 +250,11 @@ function CountUp({ to, suffix = "" }: { to: number; suffix?: string }) {
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
+    <div className="min-h-screen bg-[#050505] text-white overflow-x-hidden">
       <NavBar />
 
       {/* ── Hero ── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-24 pb-32">
+      <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-24 pb-16">
         <FloatingOrbs />
 
         {/* Grid texture */}
@@ -282,7 +284,7 @@ export default function LandingPage() {
 
           {/* Sub */}
           <p className="text-lg sm:text-xl text-white/40 font-medium max-w-2xl mx-auto mb-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 leading-relaxed">
-            SplitEase makes shared expenses effortless — whether it&apos;s a trip, rent, dinner, or a group project. Add, split, and settle in seconds.
+            SplitEase makes shared expenses effortless — whether it's a trip, rent, dinner, or a group project. Add, split, and settle in seconds.
           </p>
 
           {/* CTAs */}
@@ -321,22 +323,23 @@ export default function LandingPage() {
         </div>
 
         {/* Scroll hint */}
-        <a href="#features" className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-white/20 hover:text-white/50 transition-colors animate-bounce">
-          <span className="text-[10px] font-bold tracking-[0.25em] uppercase">Scroll</span>
+        <a href="#features" className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/20 hover:text-white/50 transition-colors animate-bounce">
+          <span className="text-xs font-semibold tracking-widest">SCROLL</span>
           <ChevronDown className="h-5 w-5" />
         </a>
       </section>
 
       {/* ── Features ── */}
-      <section id="features" className="relative py-32 px-6 bg-[#050505]">
+      <section id="features" className="relative py-32 px-6">
         <div className="max-w-7xl mx-auto">
+          {/* Section header */}
           <div className="text-center mb-20">
             <span className="inline-block px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-white/50 text-xs font-bold tracking-widest uppercase mb-5">
               Core Features
             </span>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter mb-5">
               Everything you need,{" "}
-              <span className="text-primary">nothing you don&apos;t.</span>
+              <span className="text-primary">nothing you don't.</span>
             </h2>
             <p className="text-lg text-white/30 max-w-xl mx-auto">
               Designed to make shared finances simple, transparent, and stress-free for groups of all sizes.
@@ -349,11 +352,14 @@ export default function LandingPage() {
                 key={i}
                 id={`feature-card-${i}`}
                 className={`relative group p-8 rounded-3xl border ${f.border} bg-gradient-to-br ${f.color} backdrop-blur hover:scale-[1.02] transition-all duration-300 cursor-default overflow-hidden`}
+                style={{
+                  boxShadow: `0 0 0 rgba(0,0,0,0)`,
+                }}
                 onMouseEnter={(e) => {
                   ;(e.currentTarget as HTMLElement).style.boxShadow = `0 20px 60px ${f.glow}`
                 }}
                 onMouseLeave={(e) => {
-                  ;(e.currentTarget as HTMLElement).style.boxShadow = `none`
+                  ;(e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 rgba(0,0,0,0)`
                 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent" />
@@ -371,7 +377,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── How It Works ── */}
-      <section id="how-it-works" className="relative py-32 px-6 bg-[#050505]">
+      <section id="how-it-works" className="relative py-32 px-6">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent pointer-events-none" />
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
@@ -384,51 +390,20 @@ export default function LandingPage() {
             </h2>
           </div>
 
-          {/* Desktop: icon row with real connectors, then text row */}
-          <div className="hidden lg:block">
-            {/* Icon + Connector Row */}
-            <div className="flex items-center mb-10 px-10">
-              {steps.map((s, i) => (
-                <div key={i} className="flex items-center flex-1 last:flex-none">
-                  {/* Step icon */}
-                  <div className="flex-shrink-0 w-20 h-20 rounded-3xl bg-[#0a0a0a] border-2 border-primary/40 flex items-center justify-center shadow-[0_0_24px_rgba(16,185,129,0.2)] relative z-10">
+          <div className="grid gap-8 lg:grid-cols-4">
+            {steps.map((s, i) => (
+              <div key={i} id={`step-${i}`} className="relative">
+                {i < steps.length - 1 && (
+                  <div className="hidden lg:block absolute top-10 left-full w-full h-px bg-gradient-to-r from-primary/30 to-transparent z-0" />
+                )}
+                <div className="relative z-10 flex flex-col gap-5">
+                  <div className="w-20 h-20 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center">
                     <span className="text-3xl font-black text-primary">{s.step}</span>
                   </div>
-                  {/* Connector line to next step */}
-                  {i < steps.length - 1 && (
-                    <div className="flex-1 h-[2px] bg-gradient-to-r from-primary/60 to-primary/20 mx-2" />
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Text row — 4 equal columns aligned under icons */}
-            <div className="grid grid-cols-4 gap-8">
-              {steps.map((s, i) => (
-                <div key={i} id={`step-${i}`} className="flex flex-col gap-2 pr-4">
-                  <h3 className="text-xl font-black text-white">{s.title}</h3>
-                  <p className="text-sm text-white/40 leading-relaxed">{s.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Mobile: vertical stack */}
-          <div className="flex flex-col gap-8 lg:hidden">
-            {steps.map((s, i) => (
-              <div key={i} className="flex gap-5 items-start">
-                {/* Vertical connector */}
-                <div className="flex flex-col items-center gap-2">
-                  <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-[#0a0a0a] border-2 border-primary/40 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.15)]">
-                    <span className="text-2xl font-black text-primary">{s.step}</span>
+                  <div>
+                    <h3 className="text-xl font-black mb-2">{s.title}</h3>
+                    <p className="text-sm text-white/40 leading-relaxed">{s.desc}</p>
                   </div>
-                  {i < steps.length - 1 && (
-                    <div className="w-[2px] h-8 bg-gradient-to-b from-primary/40 to-primary/10" />
-                  )}
-                </div>
-                <div className="pt-3">
-                  <h3 className="text-lg font-black mb-1 text-white">{s.title}</h3>
-                  <p className="text-sm text-white/40 leading-relaxed">{s.desc}</p>
                 </div>
               </div>
             ))}
@@ -437,7 +412,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Social Proof ── */}
-      <section id="testimonials" className="relative py-32 px-6 bg-[#050505]">
+      <section id="testimonials" className="relative py-32 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <span className="inline-block px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-white/50 text-xs font-bold tracking-widest uppercase mb-5">
@@ -454,14 +429,14 @@ export default function LandingPage() {
               <div
                 key={i}
                 id={`testimonial-${i}`}
-                className="group relative p-8 rounded-3xl border border-white/[0.08] bg-white/[0.03] hover:border-white/[0.15] hover:bg-white/[0.06] transition-all duration-300"
+                className="group relative p-8 rounded-3xl border border-white/8 bg-white/[0.03] hover:border-white/15 hover:bg-white/[0.06] transition-all duration-300"
               >
                 <div className="flex gap-1 mb-5">
                   {Array.from({ length: t.stars }).map((_, si) => (
                     <Star key={si} className="h-4 w-4 fill-primary text-primary" />
                   ))}
                 </div>
-                <p className="text-white/70 text-sm leading-relaxed mb-6 italic">&ldquo;{t.text}&rdquo;</p>
+                <p className="text-white/70 text-sm leading-relaxed mb-6 italic">"{t.text}"</p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/50 to-emerald-700/50 flex items-center justify-center font-black text-sm">
                     {t.name[0]}
@@ -478,7 +453,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Pricing ── */}
-      <section id="pricing" className="relative py-32 px-6 bg-[#050505]">
+      <section id="pricing" className="relative py-32 px-6">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent pointer-events-none" />
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
@@ -500,7 +475,7 @@ export default function LandingPage() {
                 className={`relative p-8 rounded-3xl border transition-all duration-300 ${
                   plan.highlighted
                     ? "border-primary/40 bg-gradient-to-b from-primary/15 to-primary/5 shadow-[0_0_60px_rgba(16,185,129,0.15)] lg:scale-105"
-                    : "border-white/[0.08] bg-white/[0.03] hover:border-white/[0.15]"
+                    : "border-white/8 bg-white/[0.03] hover:border-white/15"
                 }`}
               >
                 {plan.highlighted && (
@@ -518,10 +493,10 @@ export default function LandingPage() {
                 </div>
 
                 <ul className="space-y-3 mb-8">
-                  {plan.features.map((feat, fi) => (
+                  {plan.features.map((f, fi) => (
                     <li key={fi} className="flex items-center gap-3 text-sm text-white/60">
                       <Check className="h-4 w-4 text-primary shrink-0" />
-                      {feat}
+                      {f}
                     </li>
                   ))}
                 </ul>

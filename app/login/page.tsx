@@ -47,7 +47,7 @@ export default function LoginPage() {
 
     // Step 3: Admin confirmed — proceed to dashboard
     toast.success("Welcome back!")
-    router.push("/")
+    router.push("/dashboard")
     router.refresh()
   }
 
@@ -65,7 +65,7 @@ export default function LoginPage() {
 
         {/* Branding */}
         <div className="relative z-10">
-          <Link href="/" className="flex items-center gap-4 group">
+          <Link href="/" className="flex items-center gap-4 group" title="Back to home">
             <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-primary shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)] transition-transform group-hover:scale-110">
               <ShieldCheck className="h-7 w-7 text-primary-foreground" />
             </div>

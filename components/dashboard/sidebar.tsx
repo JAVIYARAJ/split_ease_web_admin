@@ -24,12 +24,13 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useUser } from "@/lib/context/user-context"
 
 const navigationItems = [
   { 
     section: "MAIN",
     items: [
-      { name: "Overview", icon: LayoutDashboard, href: "/", badge: null },
+      { name: "Overview", icon: LayoutDashboard, href: "/dashboard", badge: null },
       { name: "Users", icon: Users, href: "/users", badge: "1.2k" },
       { name: "Groups", icon: FolderOpen, href: "/groups", badge: "156" },
     ]
@@ -62,13 +63,11 @@ export function DashboardSidebar() {
   const [collapsed, setCollapsed] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
+  const { displayName, email, initials, logout } = useUser()
 
   const handleLogout = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
+    await logout()
     toast.success("Logged out successfully")
-    router.push("/login")
-    router.refresh()
   }
 
   return (
@@ -154,13 +153,13 @@ export function DashboardSidebar() {
             collapsed && "justify-center p-2"
           )}>
             <Avatar className="h-9 w-9">
-              <AvatarImage src="/placeholder-avatar.jpg" />
-              <AvatarFallback className="bg-primary text-primary-foreground">AD</AvatarFallback>
+              <AvatarImage src="" />
+              <AvatarFallback className="bg-primary text-primary-foreground">{initials}</AvatarFallback>
             </Avatar>
             {!collapsed && (
               <div className="flex-1 min-w-0">
-                <p className="truncate text-sm font-medium text-sidebar-foreground">Admin User</p>
-                <p className="truncate text-xs text-muted-foreground">admin@splitease.com</p>
+                <p className="truncate text-sm font-medium text-sidebar-foreground">{displayName}</p>
+                <p className="truncate text-xs text-muted-foreground">{email}</p>
               </div>
             )}
             {!collapsed && (
